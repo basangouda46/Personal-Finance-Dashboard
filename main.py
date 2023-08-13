@@ -218,11 +218,11 @@ CTkButton(window_liabilities, text="Add Liability", command=liability_button_pre
 
 #-------------------------------------------------------------------------------------------------
 
-x = ['Col A', 'Col B', 'Col C']
+x = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
 
-y = [50, 20, 80]
+y = [50, 20, 80, 5, 5, 5, 5, 5, 5, 5, 5, 5]
 
-fig = plt.figure(figsize=(4, 5))
+fig = plt.figure(figsize=(6, 2))
 plt.bar(x=x, height=y)
 
 # You can make your x axis labels vertical using the rotation
@@ -231,7 +231,18 @@ plt.xticks(x, rotation=90)
 # specify the window as master
 canvas = FigureCanvasTkAgg(fig, master=root)
 canvas.draw()
-canvas.get_tk_widget().grid(row=1, column=0, ipadx=40, ipady=20)
+canvas.get_tk_widget().grid(row=0, column=1, rowspan=2, ipadx=40, ipady=20)
+
+y = [35, 25, 25, 15]
+
+fig2 = plt.figure(figsize=(4, 2))
+plt.pie(y)
+
+
+# specify the window as master
+canvas = FigureCanvasTkAgg(fig2, master=root)
+canvas.draw()
+canvas.get_tk_widget().grid(row=2, column=1, rowspan =2, ipadx=40, ipady=20)
 
 #-------------------------------------------------------------------------------------------------
 
