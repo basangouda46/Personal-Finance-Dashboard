@@ -1,5 +1,6 @@
 # TO-DO
-# 1. add gift in expenses
+# 1. add bar chart for expenses
+# 2. add pie chart including everything
 
 
 from customtkinter import *
@@ -12,6 +13,11 @@ import os
 import tkinter
 from tkinter import messagebox
 import time
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, 
+NavigationToolbar2Tk)
+
 
 
 
@@ -149,7 +155,8 @@ expense_types = ["Rent",
 
 asset_types = ["Stocks",
                "Gold",
-               "Land"]
+               "Land",
+               "Savings"]
 
 liability_types = ["Student Loan",
                    "Car Loan",
@@ -157,16 +164,16 @@ liability_types = ["Student Loan",
 
 
 window_income = CTkFrame(root, width=500, height=500)
-window_income.grid(padx=10, pady=5)
+window_income.grid(row=0, column = 0, padx=10, pady=5)
 
 window_expense = CTkFrame(root, width=500, height=500)
-window_expense.grid(padx=10, pady=5)
+window_expense.grid(row=1, column = 0, padx=10, pady=5)
 
 window_asset = CTkFrame(root, width=500, height=500)
-window_asset.grid(padx=10, pady=5)
+window_asset.grid(row=2, column = 0, padx=10, pady=5)
 
 window_liabilities = CTkFrame(root, width=500, height=500)
-window_liabilities.grid(padx=10, pady=5)
+window_liabilities.grid(row=3, column = 0, padx=10, pady=5)
 
 
 CTkLabel(window_income, text="Date", justify="left").grid(sticky=W, row=3, column=0, padx=5, pady=5)
@@ -211,6 +218,23 @@ CTkButton(window_liabilities, text="Add Liability", command=liability_button_pre
 
 #-------------------------------------------------------------------------------------------------
 
+x = ['Col A', 'Col B', 'Col C']
+
+y = [50, 20, 80]
+
+fig = plt.figure(figsize=(4, 5))
+plt.bar(x=x, height=y)
+
+# You can make your x axis labels vertical using the rotation
+plt.xticks(x, rotation=90)
+
+# specify the window as master
+canvas = FigureCanvasTkAgg(fig, master=root)
+canvas.draw()
+canvas.get_tk_widget().grid(row=1, column=0, ipadx=40, ipady=20)
+
+#-------------------------------------------------------------------------------------------------
+
 # check if file path is provided -----------------------------------------------------------------
 
 filepath_dir = ""
@@ -236,8 +260,6 @@ elif data[0].rstrip() == "yes":
     filepath_dir = data[1].rstrip()
 
 # ------------------------------------------------------------------------------------------------
-
-
 
 # Create new file and create template if file does not exist -------------------------------------
 
