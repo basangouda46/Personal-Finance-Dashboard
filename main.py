@@ -17,10 +17,107 @@ import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, 
 NavigationToolbar2Tk)
+import pandas as pd
+
+def update_graph():
+
+    global filepath, df, income_df, asset_df, expenses_df, liability_df
+
+    df = pd.read_excel(filepath)
+
+    income_df = df[["Unnamed: 1", "Unnamed: 2", "Unnamed: 3"]]
+    income_df = income_df.rename({"Unnamed: 1":"DATE", "Unnamed: 2":"AMOUNT", "Unnamed: 3":"TYPE" }, axis="columns")
+    income_df = income_df.drop([0,1])
+    income_df['DATE'] = pd.to_datetime(income_df['DATE']).dt.strftime("%m/%d/%y")
+
+    expenses_df = df[["Unnamed: 5", "Unnamed: 6", "Unnamed: 7"]]
+    expenses_df = expenses_df.rename({"Unnamed: 5":"DATE", "Unnamed: 6":"AMOUNT", "Unnamed: 7":"TYPE" }, axis="columns")
+    expenses_df = expenses_df.drop([0,1])
+    expenses_df['DATE'] = pd.to_datetime(expenses_df['DATE']).dt.strftime("%m/%d/%y")
+
+    asset_df = df[["Unnamed: 9", "Unnamed: 10", "Unnamed: 11"]]
+    asset_df = asset_df.rename({"Unnamed: 9":"DATE", "Unnamed: 10":"AMOUNT", "Unnamed: 11":"TYPE" }, axis="columns")
+    asset_df = asset_df.drop([0,1])
+    asset_df['DATE'] = pd.to_datetime(asset_df['DATE']).dt.strftime("%m/%d/%y")
+
+    liability_df = df[["Unnamed: 13", "Unnamed: 14", "Unnamed: 15"]]
+    liability_df = liability_df.rename({"Unnamed: 13":"DATE", "Unnamed: 14":"AMOUNT", "Unnamed: 15":"TYPE" }, axis="columns")
+    liability_df = liability_df.drop([0,1])
+    liability_df['DATE'] = pd.to_datetime(liability_df['DATE']).dt.strftime("%m/%d/%y")
+
+    expenses_df['MONTH'] = pd.to_datetime(expenses_df['DATE']).dt.month
+
+    plot_barchart()
+    plot_piechart()
 
 
+def plot_barchart():
+    x = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+    #should be 0 every iteration
+    y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+    global expenses_df
+
+    for i in expenses_df.index:
+        y[(int(expenses_df['MONTH'][i])) - 1] += int(expenses_df['AMOUNT'][i])
+        
+    #print(y)
+
+    fig = plt.figure(figsize=(6, 2))
+    plt.bar(x=x, height=y)
+
+    # You can make your x axis labels vertical using the rotation
+
+    plt.xticks(x)
+
+    # specify the window as master
+    canvas = FigureCanvasTkAgg(fig, master=root)
+    canvas.draw()
+    canvas.get_tk_widget().grid(row=0, column=1, rowspan=2, padx=(50,50))#, ipadx=40, ipady=20)
+
+def plot_piechart():
+
+    y = [0, 0, 0, 0]
+    labels = ['Assets', 'Liabilities', 'Expenses', 'Misc']
+
+    global income_df, asset_df, liability_df, expenses_df
+
+    income_df = income_df.fillna(0)
+
+    total_income = income_df['AMOUNT'].astype(int).sum()
+
+    expenses_df = expenses_df.fillna(0)
+    liability_df = liability_df.fillna(0)
+    asset_df = asset_df.fillna(0)
+
+    total_asset = asset_df['AMOUNT'].astype(int).sum()
+
+    total_liability = liability_df['AMOUNT'].astype(int).sum()
+
+    total_expenses = expenses_df['AMOUNT'].astype(int).sum()
+
+    y[0] = (total_asset/total_income) * 100
+
+    y[1] = (total_liability/total_income) * 100
+
+    y[2] = (total_expenses/total_income) * 100
+
+    y[3] = ((total_income - (total_asset + total_liability + total_expenses))/total_income) * 100
+
+    print(y)
+
+    fig2 = plt.figure(figsize=(4, 2))
+    plt.pie(y, labels=labels, autopct='%.0f%%')
 
 
+    # specify the window as master
+    canvas = FigureCanvasTkAgg(fig2, master=root)
+    canvas.draw()
+    canvas.get_tk_widget().grid(row=2, column=1, rowspan =2)#, ipadx=40, ipady=20)
+
+
+ 
 def income_button_press():
 
     date_column = xl_sheet['B']
@@ -46,6 +143,8 @@ def income_button_press():
 
     xl_file.save(filename=filepath)
 
+    update_graph()
+
 def expenses_button_press():
 
     date_column = xl_sheet['F']
@@ -69,6 +168,8 @@ def expenses_button_press():
     c3.value  = expense_dropdown.get()
 
     xl_file.save(filename=filepath)
+
+    update_graph()
 
 def asset_button_press():
 
@@ -94,6 +195,8 @@ def asset_button_press():
 
     xl_file.save(filename=filepath)
 
+    update_graph()
+
 def liability_button_press():
 
     date_column = xl_sheet['N']
@@ -117,6 +220,8 @@ def liability_button_press():
     c3.value  = liability_dropdown.get()
 
     xl_file.save(filename=filepath)
+
+    update_graph()
 
 def popup_button_press():
     global filepath_dir, lock
@@ -218,34 +323,6 @@ CTkButton(window_liabilities, text="Add Liability", command=liability_button_pre
 
 #-------------------------------------------------------------------------------------------------
 
-x = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
-
-y = [50, 20, 80, 5, 5, 5, 5, 5, 5, 5, 5, 5]
-
-fig = plt.figure(figsize=(6, 2))
-plt.bar(x=x, height=y)
-
-# You can make your x axis labels vertical using the rotation
-plt.xticks(x, rotation=90)
-
-# specify the window as master
-canvas = FigureCanvasTkAgg(fig, master=root)
-canvas.draw()
-canvas.get_tk_widget().grid(row=0, column=1, rowspan=2, ipadx=40, ipady=20)
-
-y = [35, 25, 25, 15]
-
-fig2 = plt.figure(figsize=(4, 2))
-plt.pie(y)
-
-
-# specify the window as master
-canvas = FigureCanvasTkAgg(fig2, master=root)
-canvas.draw()
-canvas.get_tk_widget().grid(row=2, column=1, rowspan =2, ipadx=40, ipady=20)
-
-#-------------------------------------------------------------------------------------------------
-
 # check if file path is provided -----------------------------------------------------------------
 
 filepath_dir = ""
@@ -270,9 +347,11 @@ if data[0].rstrip() == "no":
 elif data[0].rstrip() == "yes":
     filepath_dir = data[1].rstrip()
 
+
 # ------------------------------------------------------------------------------------------------
 
 # Create new file and create template if file does not exist -------------------------------------
+# Create dataframe from the csv file -------------------------------------------------------------
 
 #create filename string
 filename = "Balance Sheet - " + date.today().strftime("%Y") + ".xlsx"
@@ -384,7 +463,40 @@ except:
 
     xl_file.save(filename = filepath)
 
-#-----------------------------------------------------------------------------------------------
+#PREPARING DATASET-------------------------------------------------------------------------------------
+
+df = pd.read_excel(filepath)
+
+df.head(5)
+
+income_df = df[["Unnamed: 1", "Unnamed: 2", "Unnamed: 3"]]
+income_df = income_df.rename({"Unnamed: 1":"DATE", "Unnamed: 2":"AMOUNT", "Unnamed: 3":"TYPE" }, axis="columns")
+income_df = income_df.drop([0,1])
+income_df['DATE'] = pd.to_datetime(income_df['DATE']).dt.strftime("%m/%d/%y")
+
+expenses_df = df[["Unnamed: 5", "Unnamed: 6", "Unnamed: 7"]]
+expenses_df = expenses_df.rename({"Unnamed: 5":"DATE", "Unnamed: 6":"AMOUNT", "Unnamed: 7":"TYPE" }, axis="columns")
+expenses_df = expenses_df.drop([0,1])
+expenses_df['DATE'] = pd.to_datetime(expenses_df['DATE']).dt.strftime("%m/%d/%y")
+
+asset_df = df[["Unnamed: 9", "Unnamed: 10", "Unnamed: 11"]]
+asset_df = asset_df.rename({"Unnamed: 9":"DATE", "Unnamed: 10":"AMOUNT", "Unnamed: 11":"TYPE" }, axis="columns")
+asset_df = asset_df.drop([0,1])
+asset_df['DATE'] = pd.to_datetime(asset_df['DATE']).dt.strftime("%m/%d/%y")
+
+liability_df = df[["Unnamed: 13", "Unnamed: 14", "Unnamed: 15"]]
+liability_df = liability_df.rename({"Unnamed: 13":"DATE", "Unnamed: 14":"AMOUNT", "Unnamed: 15":"TYPE" }, axis="columns")
+liability_df = liability_df.drop([0,1])
+liability_df['DATE'] = pd.to_datetime(liability_df['DATE']).dt.strftime("%m/%d/%y")
+
+expenses_df['MONTH'] = pd.to_datetime(expenses_df['DATE']).dt.month
+
+#DISPLAY GRAPH----------------------------------------------------------------------------------------
+
+plot_barchart()
+plot_piechart()
+
+#-----------------------------------------------------------------------------------------------------
 
 xl_sheet = xl_file.active
 
