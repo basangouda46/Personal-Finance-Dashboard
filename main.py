@@ -107,8 +107,13 @@ def plot_piechart():
 
     print(y)
 
-    fig2 = plt.figure(figsize=(4, 2))
-    plt.pie(y, labels=labels, autopct='%.0f%%')
+    try:
+        fig2 = plt.figure(figsize=(4, 2))
+        plt.pie(y, labels=labels, autopct='%.0f%%')
+    except: 
+        y = [30, 20, 47, 3]
+        fig2 = plt.figure(figsize=(4, 2))
+        plt.pie(y, labels=labels, autopct='%.0f%%')
 
 
     # specify the window as master
