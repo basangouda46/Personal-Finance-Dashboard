@@ -1,6 +1,4 @@
-# TO-DO
-# 1. add bar chart for expenses
-# 2. add pie chart including everything
+# Version 2.1 - 01/02/2024
 
 
 from customtkinter import *
@@ -464,7 +462,10 @@ except:
     liability_type_heading.fill = PatternFill(start_color=yellow, end_color=yellow, fill_type='solid')
     liability_type_heading.border = Border(top=Side(style='thin'), bottom=Side(style='thin'), left=Side(style='thin'), right=Side(style='thin'))
 
-    os.mkdir(os.path.join(filepath_dir, "Balance Sheet"))
+    try:
+        os.mkdir(os.path.join(filepath_dir, "Balance Sheet"))
+    except:
+        print("directory already created")
 
     xl_file.save(filename = filepath)
 
