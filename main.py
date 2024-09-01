@@ -1,4 +1,5 @@
-# Version 2.1 - 01/02/2024
+# Version 2.1 - 01/02/2024 - fixed balance sheet folder bug
+# Version 2.2 - 01/03/2024 - save amount as int rather than text
 
 
 from customtkinter import *
@@ -112,6 +113,7 @@ def plot_piechart():
         y = [30, 20, 47, 3]
         fig2 = plt.figure(figsize=(4, 2))
         plt.pie(y, labels=labels, autopct='%.0f%%')
+        print("pie chart exception")
 
 
     # specify the window as master
@@ -139,7 +141,7 @@ def income_button_press():
     c1.value = date_value
 
     c2 =  xl_sheet.cell(row=max_row_b, column=3)
-    c2.value = income_entry.get()
+    c2.value = int(income_entry.get())
 
     c3 =  xl_sheet.cell(row=max_row_b, column=4)
     c3.value  = income_dropdown.get()
@@ -165,7 +167,7 @@ def expenses_button_press():
     c1.value = date_value
 
     c2 =  xl_sheet.cell(row=max_row_f, column=7)
-    c2.value = expense_entry.get()
+    c2.value = int(expense_entry.get())
 
     c3 =  xl_sheet.cell(row=max_row_f, column=8)
     c3.value  = expense_dropdown.get()
@@ -191,7 +193,7 @@ def asset_button_press():
     c1.value = date_value
 
     c2 =  xl_sheet.cell(row=max_row_j, column=11)
-    c2.value = asset_entry.get()
+    c2.value = int(asset_entry.get())
 
     c3 =  xl_sheet.cell(row=max_row_j, column=12)
     c3.value  = asset_dropdown.get()
@@ -217,7 +219,7 @@ def liability_button_press():
     c1.value = date_value
 
     c2 =  xl_sheet.cell(row=max_row_n, column=15)
-    c2.value = liability_entry.get()
+    c2.value = int(liability_entry.get())
 
     c3 =  xl_sheet.cell(row=max_row_n, column=16)
     c3.value  = liability_dropdown.get()
