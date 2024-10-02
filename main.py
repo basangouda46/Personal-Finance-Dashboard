@@ -141,7 +141,10 @@ def income_button_press():
     c1.value = date_value
 
     c2 =  xl_sheet.cell(row=max_row_b, column=3)
-    c2.value = int(income_entry.get())
+    income_value = int(income_entry.get())
+    if(income_value != 0):
+        c2.value = income_value
+    income_entry.delete(0, "end")
 
     c3 =  xl_sheet.cell(row=max_row_b, column=4)
     c3.value  = income_dropdown.get()
@@ -167,7 +170,10 @@ def expenses_button_press():
     c1.value = date_value
 
     c2 =  xl_sheet.cell(row=max_row_f, column=7)
-    c2.value = int(expense_entry.get())
+    expense_value = int(expense_entry.get())
+    if(expense_value != 0):
+        c2.value = expense_value
+    expense_entry.delete(0, "end")
 
     c3 =  xl_sheet.cell(row=max_row_f, column=8)
     c3.value  = expense_dropdown.get()
@@ -193,7 +199,10 @@ def asset_button_press():
     c1.value = date_value
 
     c2 =  xl_sheet.cell(row=max_row_j, column=11)
-    c2.value = int(asset_entry.get())
+    asset_value = int(asset_entry.get())
+    if(asset_value != 0):
+        c2.value = asset_value
+    asset_entry.delete(0, "end")
 
     c3 =  xl_sheet.cell(row=max_row_j, column=12)
     c3.value  = asset_dropdown.get()
@@ -219,7 +228,10 @@ def liability_button_press():
     c1.value = date_value
 
     c2 =  xl_sheet.cell(row=max_row_n, column=15)
-    c2.value = int(liability_entry.get())
+    liability_value = int(liability_entry.get())
+    if(liability_value != 0):
+        c2.value = liability_value 
+    liability_entry.delete(0, "end")
 
     c3 =  xl_sheet.cell(row=max_row_n, column=16)
     c3.value  = liability_dropdown.get()
