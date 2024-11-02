@@ -1,7 +1,7 @@
-# Version 2.1 - 01/02/2024 - fixed balance sheet folder bug
-# Version 2.2 - 01/03/2024 - save amount as int rather than text
-# Version 2.3 - 10/03/2024 - clear input text after clicking button and don't accept 0 value
-# Version 2.4 - 11/01/2024 - created requirements.txt file
+# Release 2.1 - 01/02/2024 - fixed balance sheet folder bug
+# Release 2.2 - 01/03/2024 - save amount as int rather than text
+# Release 2.3 - 10/03/2024 - clear input text after clicking button and don't accept 0 value
+# Release 2.4 - 11/01/2024 - created requirements.txt file
 
 
 from customtkinter import *
