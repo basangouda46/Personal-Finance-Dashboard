@@ -24,8 +24,50 @@ NavigationToolbar2Tk)
 #needed for graphs
 import pandas as pd 
 
-import pandastable as ps
 from pandastable import Table
+
+# vscode co-pilot generated patch.
+# CustomTkinter disallows bind_all, so override pandastable bindings safely.
+def _patched_doBindings(self):
+    self.bind("<Button-1>", self.handle_left_click)
+    self.bind("<Double-Button-1>", self.handle_double_click)
+    self.bind("<Control-Button-1>", self.handle_left_ctrl_click)
+    self.bind("<Shift-Button-1>", self.handle_left_shift_click)
+
+    self.bind("<ButtonRelease-1>", self.handle_left_release)
+    if self.ostyp == 'darwin':
+        self.bind("<Button-2>", self.handle_right_click)
+        self.bind('<Shift-Button-1>', self.handle_right_click)
+    else:
+        self.bind("<Button-3>", self.handle_right_click)
+
+    self.bind('<B1-Motion>', self.handle_mouse_drag)
+
+    self.bind("<Control-c>", self.copy)
+    self.bind("<Delete>", self.clearData)
+    self.bind("<Control-v>", self.paste)
+    self.bind("<Control-z>", self.undo)
+    self.bind("<Control-a>", self.selectAll)
+    self.bind("<Control-f>", self.findText)
+    self.bind("<Control-equal>", self.zoomIn)
+    self.bind("<Control-minus>", self.zoomOut)
+
+    self.bind("<Right>", self.handle_arrow_keys)
+    self.bind("<Left>", self.handle_arrow_keys)
+    self.bind("<Up>", self.handle_arrow_keys)
+    self.bind("<Down>", self.handle_arrow_keys)
+    self.bind("<KP_8>", self.handle_arrow_keys)
+    self.bind("<Tab>", self.handle_arrow_keys)
+    self.bind("<Prior>", self.handle_page_up)
+    self.bind("<Next>", self.handle_page_down)
+
+    self.bind("<MouseWheel>", self.mouse_wheel)
+    self.bind('<Button-4>', self.mouse_wheel)
+    self.bind('<Button-5>', self.mouse_wheel)
+    self.focus_set()
+    return
+
+Table.doBindings = _patched_doBindings
 
 def update_graph():
 
@@ -277,12 +319,8 @@ tabview.pack(padx=20, pady=20, fill="both", expand=True)
 tabview.add("Dashboard")
 tabview.add("Balance Sheet")
 
-# bs_frame = CTkFrame(master=tabview.tab("Balance Sheet"), width=2000, height=2000)
-
-# frame = tabview.tab("Balance Sheet")
-
-#bs = Frame(master=tabview.tab("Balance Sheet"), width=500, height=500)
-# bs.grid(row=0, column = 0, padx=10, pady=5)
+pt_frame = CTkFrame(master=tabview.tab("Balance Sheet"), width=500, height=500)
+pt_frame.pack(fill="both", expand=True, padx=10, pady=5)
 
 date_value = date.today().strftime("%m/%d/%y")
 
@@ -540,9 +578,9 @@ plot_piechart()
 
 #-----------------------------------------------------------------------------------------------------
 
-# pt = Table(parent=bs_frame, dataframe=df, showstatusbar=True, showtoolbar=True)
-# pt.show()
-
 xl_sheet = xl_file.active
+
+pt = Table(parent=pt_frame, dataframe=df, showstatusbar=True, showtoolbar=True)
+pt.show()
 
 root.mainloop()
