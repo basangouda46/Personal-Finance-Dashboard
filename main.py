@@ -1,7 +1,7 @@
 # Release 2.1 - 01/02/2024 - fixed balance sheet folder bug
 # Release 2.2 - 01/03/2024 - save amount as int rather than text
 # Release 2.3 - 10/03/2024 - clear input text after clicking button and don't accept 0 value
-# Release 2.4 - 11/01/2024 - created requirements.txt file
+# Release 2.4 - 11/01/2024 - created requirements.txt file using pipreqs
 
 
 from customtkinter import *
@@ -14,11 +14,18 @@ import os
 import tkinter
 from tkinter import messagebox
 import time
+
+#matplotlib needs numpy version 1 - install using pip install "numpy<2"
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, 
 NavigationToolbar2Tk)
-import pandas as pd
+
+#needed for graphs
+import pandas as pd 
+
+import pandastable as ps
+from pandastable import Table
 
 def update_graph():
 
@@ -73,7 +80,7 @@ def plot_barchart():
     plt.xticks(x)
 
     # specify the window as master
-    canvas = FigureCanvasTkAgg(fig, master=root)
+    canvas = FigureCanvasTkAgg(fig, master=tabview.tab("Dashboard"))
     canvas.draw()
     canvas.get_tk_widget().grid(row=0, column=1, rowspan=2, padx=(50,50))#, ipadx=40, ipady=20)
 
@@ -119,7 +126,7 @@ def plot_piechart():
 
 
     # specify the window as master
-    canvas = FigureCanvasTkAgg(fig2, master=root)
+    canvas = FigureCanvasTkAgg(fig2, master=tabview.tab("Dashboard"))
     canvas.draw()
     canvas.get_tk_widget().grid(row=2, column=1, rowspan =2)#, ipadx=40, ipady=20)
 
@@ -264,6 +271,19 @@ set_default_color_theme("blue")
 root = CTk()
 root.title("Personal Finance Dashboard")
 
+tabview = CTkTabview(master=root)
+tabview.pack(padx=20, pady=20, fill="both", expand=True)
+
+tabview.add("Dashboard")
+tabview.add("Balance Sheet")
+
+# bs_frame = CTkFrame(master=tabview.tab("Balance Sheet"), width=2000, height=2000)
+
+# frame = tabview.tab("Balance Sheet")
+
+#bs = Frame(master=tabview.tab("Balance Sheet"), width=500, height=500)
+# bs.grid(row=0, column = 0, padx=10, pady=5)
+
 date_value = date.today().strftime("%m/%d/%y")
 
 income_types = ["Salary",
@@ -287,16 +307,16 @@ liability_types = ["Student Loan",
                    "Home Loan"]
 
 
-window_income = CTkFrame(root, width=500, height=500)
+window_income = CTkFrame(master=tabview.tab("Dashboard"), width=500, height=500)
 window_income.grid(row=0, column = 0, padx=10, pady=5)
 
-window_expense = CTkFrame(root, width=500, height=500)
+window_expense = CTkFrame(master=tabview.tab("Dashboard"), width=500, height=500)
 window_expense.grid(row=1, column = 0, padx=10, pady=5)
 
-window_asset = CTkFrame(root, width=500, height=500)
+window_asset = CTkFrame(master=tabview.tab("Dashboard"), width=500, height=500)
 window_asset.grid(row=2, column = 0, padx=10, pady=5)
 
-window_liabilities = CTkFrame(root, width=500, height=500)
+window_liabilities = CTkFrame(master=tabview.tab("Dashboard"), width=500, height=500)
 window_liabilities.grid(row=3, column = 0, padx=10, pady=5)
 
 
@@ -519,6 +539,9 @@ plot_barchart()
 plot_piechart()
 
 #-----------------------------------------------------------------------------------------------------
+
+# pt = Table(parent=bs_frame, dataframe=df, showstatusbar=True, showtoolbar=True)
+# pt.show()
 
 xl_sheet = xl_file.active
 

@@ -3,10 +3,12 @@ Created an app using Python along with customtkinter and openpyxl to track my fi
 
 To run the code, follow these steps
 
-1. Pre-requisites 
-  You will need Python, Git and few of the dependencies to run the code.
+1. git clone https://github.com/basangouda46/Personal-Finance-Dashboard.git
 
-2. git clone https://github.com/basangouda46/Personal-Finance-Dashboard.git
+2. Pre-requisites 
+  - You will need Python, Git and few of the dependencies to run the code.
+  - Run the command "pip install -r requirements.txt" to install the dependencies.
+  - If you run into an Numpy error, run the command pip install "numpy<2", which installs the correct numpy version needed for Matplotlib.
 
 3. (only for macOS) run "python3 setup.py py2app -d ../" and you will get the app.
 
