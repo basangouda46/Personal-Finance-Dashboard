@@ -233,7 +233,7 @@ def expenses_button_press():
 
     update_graph()
 
-def asset_button_press():
+def asset_add_button_press():
 
     date_column = xl_sheet['J']
     # max_row_j = len(date_column) + 1
@@ -251,6 +251,36 @@ def asset_button_press():
 
     c2 =  xl_sheet.cell(row=max_row_j, column=11)
     asset_value = int(asset_entry.get())
+    if(asset_value != 0):
+        c2.value = asset_value
+    asset_entry.delete(0, "end")
+
+    c3 =  xl_sheet.cell(row=max_row_j, column=12)
+    c3.value  = asset_dropdown.get()
+
+    xl_file.save(filename=filepath)
+
+    update_graph()
+
+def asset_sell_button_press():
+
+    date_column = xl_sheet['J']
+    # max_row_j = len(date_column) + 1
+
+    max_row_j = 2
+    date_column = date_column[1:]
+    for r in date_column:
+        if r.value is None:
+            break
+        else:
+            max_row_j += 1
+
+    c1 = xl_sheet.cell(row=max_row_j, column=10)
+    c1.value = date_value
+
+    c2 =  xl_sheet.cell(row=max_row_j, column=11)
+    asset_value = int(asset_entry.get())
+    asset_value = -1 * asset_value
     if(asset_value != 0):
         c2.value = asset_value
     asset_entry.delete(0, "end")
@@ -386,7 +416,8 @@ asset_entry.grid(row=4, column=1, padx=5, pady=5)
 CTkLabel(window_asset, text="Type", justify="left").grid(sticky=W, row=5, column=0, padx=5, pady=5)
 asset_dropdown = CTkOptionMenu(window_asset, values=asset_types)
 asset_dropdown.grid(row=5, column=1, padx=5, pady=5)
-CTkButton(window_asset, text="Add Asset", command=asset_button_press).grid(row=7, column=2, padx=5, pady=5)
+CTkButton(window_asset, text="Add Asset", command=asset_add_button_press).grid(row=7, column=2, padx=5, pady=5)
+CTkButton(window_asset, text="Sell Asset", command=asset_sell_button_press).grid(row=7, column=1, padx=5, pady=5)
 
 CTkLabel(window_liabilities, text="Date", justify="left").grid(sticky=W, row=3, column=0, padx=5, pady=5)
 CTkLabel(window_liabilities, text=date_value).grid(row=3, column=1, padx=5, pady=5)
