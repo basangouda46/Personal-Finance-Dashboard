@@ -1,7 +1,22 @@
-# Release 2.1 - 01/02/2024 - fixed balance sheet folder bug
-# Release 2.2 - 01/03/2024 - save amount as int rather than text
-# Release 2.3 - 10/03/2024 - clear input text after clicking button and don't accept 0 value
-# Release 2.4 - 11/01/2024 - created requirements.txt file using pipreqs
+# Release 2.1 - 01/02/2024 
+#   - fixed balance sheet folder bug
+
+# Release 2.2 - 01/03/2024 
+#   - save amount as int rather than text
+
+# Release 2.3 - 10/03/2024 
+#   - clear input text after clicking button and don't accept 0 value
+
+# Release 2.4 - 11/01/2024 
+#   - created requirements.txt file using pipreqs
+
+# Release 3.0 - 06/08/2026
+#   - created tabview for dashboard and balance sheet.
+#   - added pandastable to replace excel dependency.
+#   - added sell asset button.
+
+#next release
+#change barplot to histogram.
 
 
 from customtkinter import *
@@ -25,6 +40,7 @@ NavigationToolbar2Tk)
 import pandas as pd 
 
 from pandastable import Table
+
 
 # vscode co-pilot generated patch.
 # CustomTkinter disallows bind_all, so override pandastable bindings safely.
@@ -109,8 +125,8 @@ def plot_barchart():
 
     global expenses_df
 
-    for i in expenses_df.index:
-        y[(int(expenses_df['MONTH'][i])) - 1] += int(expenses_df['AMOUNT'][i])
+    # for i in expenses_df.index:
+    #     y[(int(expenses_df['MONTH'][i])) - 1] += int(expenses_df['AMOUNT'][i])
         
     #print(y)
 
@@ -203,6 +219,45 @@ def income_button_press():
     xl_file.save(filename=filepath)
 
     update_graph()
+
+    #pandastable
+    date_column = pt.model.df.at['B']
+
+    #max_row_b and date column indexes are off by 1 
+    max_row_b = 2
+    date_column = date_column[1:]
+    for r in date_column:
+        if r.value is None:
+            break
+        else:
+            max_row_b += 1
+
+
+    # c1 = xl_sheet.cell(row=max_row_b, column=2)
+    # c1 = pt.model.df.iat[max_row_b, 2]
+    # c1.value = date_value
+    pt.model.df.iat[max_row_b, 2] = date_value
+
+    # c2 =  xl_sheet.cell(row=max_row_b, column=3)
+    # c2 = pt.model.df.iat[max_row_b, 3]
+    income_value = int(income_entry.get())
+    if(income_value != 0):
+        # c2.value = income_value
+        pt.model.df.iat[max_row_b, 3] = income_value
+    income_entry.delete(0, "end")
+
+    # c3 =  xl_sheet.cell(row=max_row_b, column=4)
+    # c3 = pt.model.df.iat[max_row_b, 4]
+    # c3.value  = income_dropdown.get()
+    pt.model.df.iat[max_row_b, 4] = income_dropdown.get()
+
+    # xl_file.save(filename=filepath)
+
+    # update_graph()
+
+    pt.redraw()
+
+    print('updated pandastable')
 
 def expenses_button_press():
 
@@ -349,7 +404,7 @@ tabview.pack(padx=20, pady=20, fill="both", expand=True)
 tabview.add("Dashboard")
 tabview.add("Balance Sheet")
 
-pt_frame = CTkFrame(master=tabview.tab("Balance Sheet"), width=500, height=500)
+pt_frame = CTkFrame(master=tabview.tab("Balance Sheet"), width=1000, height=1000)
 pt_frame.pack(fill="both", expand=True, padx=10, pady=5)
 
 date_value = date.today().strftime("%m/%d/%y")
@@ -479,6 +534,8 @@ except:
     yellow = "00FFFF00"
     green = "90EE90"
 
+#creating a template on the sheet
+
     #income
     income_heading = xl_sheet.cell(row=2, column=2)
     income_heading.value = "INCOME"
@@ -602,7 +659,10 @@ liability_df['DATE'] = pd.to_datetime(liability_df['DATE']).dt.strftime("%m/%d/%
 
 expenses_df['MONTH'] = pd.to_datetime(expenses_df['DATE']).dt.month
 
-#DISPLAY GRAPH----------------------------------------------------------------------------------------
+# DISPLAY GRAPH---------------------------------------------------------------------------------------
+# Analysis using matplotlib. 
+# Uses pandas dataframe to plot graphs. 
+# Pandas dataframe is created from the excel file.
 
 plot_barchart()
 plot_piechart()
@@ -611,7 +671,118 @@ plot_piechart()
 
 xl_sheet = xl_file.active
 
-pt = Table(parent=pt_frame, dataframe=df, showstatusbar=True, showtoolbar=True)
+pt = Table(parent=pt_frame, rows=40, cols=30)
 pt.show()
+
+#creating a template on the sheet in pandastable
+#income
+pt.model.df.iat[1,1] = "INCOME"
+pt.model.df.iat[2,1] = "DATE"
+pt.model.df.iat[2,2] = "AMOUNT"
+pt.model.df.iat[2,3] = "TYPE"
+
+#expenses
+pt.model.df.iat[1,5] = "EXPENSES"
+pt.model.df.iat[2,5] = "DATE"
+pt.model.df.iat[2,6] = "AMOUNT"
+pt.model.df.iat[2,7] = "TYPE"
+
+#asset
+pt.model.df.iat[1,9] = "ASSET"
+pt.model.df.iat[2,9] = "DATE"
+pt.model.df.iat[2,10] = "AMOUNT"
+pt.model.df.iat[2,11] = "TYPE"
+
+#liability
+pt.model.df.iat[1,13] = "LIABILITY"
+pt.model.df.iat[2,13] = "DATE"
+pt.model.df.iat[2,14] = "AMOUNT"
+pt.model.df.iat[2,15] = "TYPE"
+
+# xl_sheet.merge_cells(start_row=2,start_column=2,end_row=2,end_column=4)
+# income_heading.alignment = Alignment(horizontal = 'center')
+# income_heading.fill = PatternFill(start_color=green, end_color=green, fill_type='solid')
+
+# income_date_heading = xl_sheet.cell(row=3, column=2)
+# income_date_heading.value = "DATE"
+# income_date_heading.fill = PatternFill(start_color=yellow, end_color=yellow, fill_type='solid')
+# income_date_heading.border = Border(top=Side(style='thin'), bottom=Side(style='thin'), left=Side(style='thin'), right=Side(style='thin'))
+
+# income_amount_heading = xl_sheet.cell(row=3, column=3)
+# income_amount_heading.value = "AMOUNT"
+# income_amount_heading.fill = PatternFill(start_color=yellow, end_color=yellow, fill_type='solid')
+# income_amount_heading.border = Border(top=Side(style='thin'), bottom=Side(style='thin'), left=Side(style='thin'), right=Side(style='thin'))
+
+# income_type_heading = xl_sheet.cell(row=3,  column=4)
+# income_type_heading.value = "TYPE"
+# income_type_heading.fill = PatternFill(start_color=yellow, end_color=yellow, fill_type='solid')
+# income_type_heading.border = Border(top=Side(style='thin'), bottom=Side(style='thin'), left=Side(style='thin'), right=Side(style='thin'))
+
+# #expenses
+# expense_heading = xl_sheet.cell(row=2, column=6)
+# expense_heading.value = "EXPENSES"
+# xl_sheet.merge_cells(start_row=2,start_column=6,end_row=2,end_column=8)
+# expense_heading.alignment = Alignment(horizontal = 'center')
+# expense_heading.fill = PatternFill(start_color=green, end_color=green, fill_type='solid')
+
+# expense_date_heading = xl_sheet.cell(row=3, column=6)
+# expense_date_heading.value = "DATE"
+# expense_date_heading.fill = PatternFill(start_color=yellow, end_color=yellow, fill_type='solid')
+# expense_date_heading.border = Border(top=Side(style='thin'), bottom=Side(style='thin'), left=Side(style='thin'), right=Side(style='thin'))
+
+# expense_amount_heading = xl_sheet.cell(row=3, column=7)
+# expense_amount_heading.value = "AMOUNT"
+# expense_amount_heading.fill = PatternFill(start_color=yellow, end_color=yellow, fill_type='solid')
+# expense_amount_heading.border = Border(top=Side(style='thin'), bottom=Side(style='thin'), left=Side(style='thin'), right=Side(style='thin'))
+
+# expense_type_heading = xl_sheet.cell(row=3,  column=8)
+# expense_type_heading.value = "TYPE"
+# expense_type_heading.fill = PatternFill(start_color=yellow, end_color=yellow, fill_type='solid')
+# expense_type_heading.border = Border(top=Side(style='thin'), bottom=Side(style='thin'), left=Side(style='thin'), right=Side(style='thin'))
+
+# #asset
+# asset_heading = xl_sheet.cell(row=2, column=10)
+# asset_heading.value = "ASSET"
+# xl_sheet.merge_cells(start_row=2,start_column=10,end_row=2,end_column=12)
+# asset_heading.alignment = Alignment(horizontal = 'center')
+# asset_heading.fill = PatternFill(start_color=green, end_color=green, fill_type='solid')
+
+# asset_date_heading = xl_sheet.cell(row=3, column=10)
+# asset_date_heading.value = "DATE"
+# asset_date_heading.fill = PatternFill(start_color=yellow, end_color=yellow, fill_type='solid')
+# asset_date_heading.border = Border(top=Side(style='thin'), bottom=Side(style='thin'), left=Side(style='thin'), right=Side(style='thin'))
+
+# asset_amount_heading = xl_sheet.cell(row=3, column=11)
+# asset_amount_heading.value = "AMOUNT"
+# asset_amount_heading.fill = PatternFill(start_color=yellow, end_color=yellow, fill_type='solid')
+# asset_amount_heading.border = Border(top=Side(style='thin'), bottom=Side(style='thin'), left=Side(style='thin'), right=Side(style='thin'))
+
+# asset_type_heading = xl_sheet.cell(row=3,  column=12)
+# asset_type_heading.value = "TYPE"
+# asset_type_heading.fill = PatternFill(start_color=yellow, end_color=yellow, fill_type='solid')
+# asset_type_heading.border = Border(top=Side(style='thin'), bottom=Side(style='thin'), left=Side(style='thin'), right=Side(style='thin'))
+
+# #liability
+# liability_heading = xl_sheet.cell(row=2, column=14)
+# liability_heading.value = "LIABILITY"
+# xl_sheet.merge_cells(start_row=2,start_column=14,end_row=2,end_column=16)
+# liability_heading.alignment = Alignment(horizontal = 'center')
+# liability_heading.fill = PatternFill(start_color=green, end_color=green, fill_type='solid')
+
+# liability_date_heading = xl_sheet.cell(row=3, column=14)
+# liability_date_heading.value = "DATE"
+# liability_date_heading.fill = PatternFill(start_color=yellow, end_color=yellow, fill_type='solid')
+# liability_date_heading.border = Border(top=Side(style='thin'), bottom=Side(style='thin'), left=Side(style='thin'), right=Side(style='thin'))
+
+# liability_amount_heading = xl_sheet.cell(row=3, column=15)
+# liability_amount_heading.value = "AMOUNT"
+# liability_amount_heading.fill = PatternFill(start_color=yellow, end_color=yellow, fill_type='solid')
+# liability_amount_heading.border = Border(top=Side(style='thin'), bottom=Side(style='thin'), left=Side(style='thin'), right=Side(style='thin'))
+
+# liability_type_heading = xl_sheet.cell(row=3,  column=16)
+# liability_type_heading.value = "TYPE"
+# liability_type_heading.fill = PatternFill(start_color=yellow, end_color=yellow, fill_type='solid')
+# liability_type_heading.border = Border(top=Side(style='thin'), bottom=Side(style='thin'), left=Side(style='thin'), right=Side(style='thin'))
+
 
 root.mainloop()
