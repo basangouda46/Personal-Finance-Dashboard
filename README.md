@@ -2,6 +2,8 @@
 
 A desktop personal-finance tracker built with CustomTkinter and an MVC architecture.
 
+Please read the Wiki Page.
+
 To run the code, follow these steps
 
 1. git clone https://github.com/basangouda46/Personal-Finance-Dashboard.git
