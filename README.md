@@ -12,7 +12,10 @@ To run the code, follow these steps
 
 3. (macOS) To package the application, run `python3 setup.py py2app -d ../`.
 
-   
-<img width="1086" alt="Screenshot 2023-08-20 at 12 37 31 PM" src="https://github.com/basangouda46/Personal-Finance-Dashboard/assets/54644263/b14625c3-aa6c-4b89-b291-0b422a2c3b3e">
 
-<img width="1437" alt="Screenshot 2023-08-20 at 12 37 55 PM" src="https://github.com/basangouda46/Personal-Finance-Dashboard/assets/54644263/7cf79bcd-2957-4abe-a0ea-46fdcc2e9ad4">
+<img width="1434" height="819" alt="Release 4 0 - 1" src="https://github.com/user-attachments/assets/badaadd7-7ab5-45c4-9dae-33bf1efbbfbe" />
+
+<img width="1433" height="815" alt="Release 4 0 -2" src="https://github.com/user-attachments/assets/f35ea239-71c3-45b9-b0c7-3f5cfb3fe1ce" />
+
+
+
