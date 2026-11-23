@@ -31,6 +31,7 @@ ADD_BUTTON_LABELS = {
     "Assets": "Add Asset",
     "Liabilities": "Add Liability",
 }
+MAX_BALANCE_SHEET_ROWS = 50
 
 
 class DashboardView(ctk.CTk):
@@ -244,6 +245,7 @@ class DashboardView(ctk.CTk):
         self.balance_table.thousandseparator = ","
         self.balance_table.show()
         self.balance_table.hideRowHeader()
+        self.balance_table.rowheight = 22
         self.balance_table.columnwidths.update(
             {
                 "DATE": column_widths[0],
@@ -254,6 +256,18 @@ class DashboardView(ctk.CTk):
         )
         self.balance_table.Xscrollbar.configure(
             command=self._scroll_balance_sheet
+        )
+        self.balance_table.Yscrollbar.configure(
+            command=self.balance_table.set_yviews
+        )
+        self.balance_table.bind(
+            "<MouseWheel>", self._mousewheel_balance_sheet
+        )
+        self.balance_table.bind(
+            "<Button-4>", self._mousewheel_balance_sheet
+        )
+        self.balance_table.bind(
+            "<Button-5>", self._mousewheel_balance_sheet
         )
         self.balance_table.redraw()
 
@@ -276,12 +290,25 @@ class DashboardView(ctk.CTk):
         self._amount_entries[category].delete(0, "end")
 
     def update_balance_sheet(self, transactions: pd.DataFrame) -> None:
-        self.balance_table.model.df = transactions
+        row_count = max(len(transactions), MAX_BALANCE_SHEET_ROWS)
+        displayed_transactions = transactions.reindex(
+            range(row_count)
+        )
+        self.balance_table.model.df = displayed_transactions
         self.balance_table.redraw()
 
     def _scroll_balance_sheet(self, *args: str) -> None:
         self.balance_table.set_xviews(*args)
         self.balance_sheet_header.xview(*args)
+
+    def _mousewheel_balance_sheet(self, event: object) -> str:
+        delta = getattr(event, "delta", 0)
+        if delta:
+            units = -1 if delta > 0 else 1
+        else:
+            units = -1 if getattr(event, "num", 0) == 4 else 1
+        self.balance_table.set_yviews("scroll", units, "units")
+        return "break"
 
     def update_dashboard(self, transactions: Sequence[Transaction]) -> None:
         for canvas in self._chart_canvases:
